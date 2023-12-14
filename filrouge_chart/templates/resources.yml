@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{.Release.Namespace}}-pv-5g
+  labels:
+    type: local
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/{{.Release.Namespace}}/pv-5g"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{.Release.Namespace}}-pv-2g
+  labels:
+    type: local
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/{{.Release.Namespace}}/pv-2g"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
