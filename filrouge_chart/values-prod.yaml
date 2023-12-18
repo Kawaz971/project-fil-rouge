@@ -1,0 +1,23 @@
+wordpress:
+  host: filrouge-prod.kawaz.cloudns.ph
+  replicas: 2
+  image:
+    repository: jaysse/pipeline-serviceweb
+    tag: 1.13
+  imagePullPolicy: Always
+  wp_db_host: mariadb-service
+  hpa:
+    min: 2
+    max: 5
+    cpu: 50
+mariadb:
+  replicas: 1
+  image:
+    repository: mariadb
+    tag: 11.1
+  imagePullPolicy: IfNotPresent
+  mysql_root_password: root
+  mysql_database: wordpress
+  mysql_user: wordpress
+  mysql_password: wordpress
+  
