@@ -1,5 +1,5 @@
 wordpress:
-  host: filrouge-prod.kawaz.cloudns.ph
+  host: filrouge-prod.barnz.cloudns.ph
   replicas: 2
   image:
     repository: barnz/wordpress-filrouge
