@@ -2,8 +2,8 @@ wordpress:
   host: filrouge-prod.kawaz.cloudns.ph
   replicas: 2
   image:
-    repository: jaysse/pipeline-serviceweb
-    tag: 1.13
+    repository: barnz/wordpress-filrouge
+    tag: 1.3
   imagePullPolicy: Always
   wp_db_host: mariadb-service
   hpa:
