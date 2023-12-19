@@ -1,0 +1,6 @@
+- host: all
+  become: true
+  tasks:
+     - name: update Prod infra
+       commmand: cd /home/ubuntu/
+       command: helm upgrade filrouge-chart-prod ./filrouge_chart --values=./filrouge_chart/values-prod.yaml
