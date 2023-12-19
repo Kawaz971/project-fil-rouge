@@ -1,5 +1,5 @@
 wordpress:
-  host: filrouge-prod.barnz.cloudns.ph
+  host: my-load-balancer-2054635803.eu-west-3.elb.amazonaws.com
   replicas: 2
   image:
     repository: barnz/wordpress-filrouge
