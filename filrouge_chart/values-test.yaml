@@ -3,7 +3,7 @@ wordpress:
   replicas: 1
   image:
     repository: jaysse/pipeline-serviceweb
-    tag: 1.13
+    tag: latest
   imagePullPolicy: Always
   wp_db_host: mariadb-service
   hpa:

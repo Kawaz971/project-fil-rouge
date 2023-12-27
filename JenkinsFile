@@ -1,0 +1,55 @@
+node {
+    
+    stage('Git checkout'){
+        git branch: 'main', url: 'https://github.com/Kawaz971/project-fil-rouge.git'
+    }
+    
+    stage('Sending docker file to Ansible server over ssh'){
+        sshagent(['ansible_key']) {
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26'
+            sh 'scp -r /var/lib/jenkins/workspace/pipeline-serviceweb/* ubuntu@172.20.4.26:/home/ubuntu '
+        }
+    }
+    stage('Docker Build Image'){
+        sshagent(['ansible_key']) {
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 cd /home/ubuntu '
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker image build -t $JOB_NAME:v1.$BUILD_ID . '
+        }
+    }
+    stage('Docker image tagging'){
+        sshagent(['ansible_key']) {
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 cd /home/ubuntu ' 
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker image tag $JOB_NAME:v1.$BUILD_ID jaysse/$JOB_NAME:v1.$BUILD_ID '
+            sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker image tag $JOB_NAME:v1.$BUILD_ID jaysse/$JOB_NAME:latest '
+        }
+    }
+    
+    stage('Push docker image to docker hub'){
+        sshagent(['ansible_key']) {
+             withCredentials([string(credentialsId: 'dockerhub_password', variable: 'dockerhub_password')]) {
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker login -u jaysse -p ${dockerhub_password}"
+                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker image push jaysse/$JOB_NAME:v1.$BUILD_ID '
+                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26 docker image push jaysse/$JOB_NAME:latest '
+                             
+            } 
+            
+        }
+    }
+    stage('Copy files from Ansible to Kubernetes server'){
+        sshagent(['kubernetes_server']) {
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132'
+              sh 'scp -r /var/lib/jenkins/workspace/pipeline-serviceweb/* ubuntu@172.20.4.132:/home/ubuntu '
+              
+        }
+    }
+    stage('Update HELM on Kubernetes server'){
+        sshagent(['kubernetes_server']) {
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 cd /home/ubuntu '
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 helm upgrade filrouge-chart-prod ./filrouge_chart --values=./filrouge_chart/values-prod.yaml '
+             
+         }
+    }
+        
+    
+}
