@@ -4,7 +4,7 @@ node {
         git branch: 'main', url: 'https://github.com/Kawaz971/project-fil-rouge.git'
     }
     
-    stage('Sending docker file to Ansible server over ssh'){
+    stage('Sending docker file to Docker-server over ssh'){
         sshagent(['ansible_key']) {
             sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.26'
             sh 'scp -r /var/lib/jenkins/workspace/pipeline-serviceweb/* ubuntu@172.20.4.26:/home/ubuntu '
@@ -35,18 +35,36 @@ node {
             
         }
     }
-    stage('Copy files from Ansible to Kubernetes server'){
+    stage('Copy files from Docker-Server to Kubernetes server'){
         sshagent(['kubernetes_server']) {
               sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132'
               sh 'scp -r /var/lib/jenkins/workspace/pipeline-serviceweb/* ubuntu@172.20.4.132:/home/ubuntu '
               
         }
     }
-    stage('Update HELM on Kubernetes server'){
+    stage('Update HELM on Kubernetes server TEST ENVIRONNEMENT'){
         sshagent(['kubernetes_server']) {
               sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
               sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 cd /home/ubuntu '
-              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 helm upgrade filrouge-chart-prod ./filrouge_chart --values=./filrouge_chart/values-prod.yaml '
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 helm upgrade filrouge-chart-test ./filrouge_chart --values=./filrouge_chart/values-test.yaml --namespace filrouge-test '
+             
+         }
+    }
+   
+    stage('CURL on Test Environnement'){
+        sh 'curl filrouge-test.kawaz.cloudns.ph' 
+    }
+    
+    stage('Deploy on Prod ?'){ 
+        input 'Should we deploy ?'
+        }    
+
+
+    stage('Update HELM on Kubernetes server PROD ENVIRONNEMENT'){
+        sshagent(['kubernetes_server']) {
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 cd /home/ubuntu '
+              sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.20.4.132 helm upgrade filrouge-chart-prod ./filrouge_chart --values=./filrouge_chart/values-prod.yaml --namespace filrouge-prod '
              
          }
     }

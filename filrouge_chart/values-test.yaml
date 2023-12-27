@@ -10,6 +10,17 @@ wordpress:
     min: 1
     max: 2
     cpu: 50
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - wordpress
+          topologyKey: "kubernetes.io/hostname"
+
 mariadb:
   replicas: 1
   image:
