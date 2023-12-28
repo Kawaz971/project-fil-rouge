@@ -1,13 +1,13 @@
 wordpress:
   host: filrouge-test.kawaz.cloudns.ph
-  replicas: 2
+  replicas: 3
   image:
     repository: jaysse/pipeline-serviceweb
     tag: latest
   imagePullPolicy: Always
   wp_db_host: mariadb-service
   hpa:
-    min: 1
+    min: 2
     max: 4
     cpu: 50
   affinity:
@@ -22,7 +22,7 @@ wordpress:
           topologyKey: "kubernetes.io/hostname"
 
 mariadb:
-  replicas: 2
+  replicas: 1
   image:
     repository: mariadb
     tag: 11.1
