@@ -1,6 +1,6 @@
 wordpress:
   host: filrouge-test.kawaz.cloudns.ph
-  replicas: 4
+  replicas: 2
   image:
     repository: jaysse/pipeline-serviceweb
     tag: latest
