@@ -7,7 +7,7 @@ wordpress:
   imagePullPolicy: Always
   wp_db_host: mariadb-service
   hpa:
-    min: 2
+    min: 1
     max: 4
     cpu: 50
   affinity:
