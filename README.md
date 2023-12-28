@@ -66,6 +66,9 @@ Solution : export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 # Changement de Namespace
 sudo kubectl config set-context --current --namespace=filrouge-prod
 
+# Lister les pods sur chaque Nodes
+kubectl get pods -o wide
+
 # Suppression Realase Helm 
 helm uninstall filrouge-chart-prod 
 
